@@ -126,6 +126,21 @@
             animation-delay: 3s;
         }
 
+        /* Play button */
+        .play-btn {
+            margin-top: 18px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            border-radius: 24px;
+            border: none;
+            background: linear-gradient(90deg,#ff7a7a,#ff4c4c);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        .play-btn:active { transform: translateY(1px); }
+
         @keyframes fadeInText {
             0% { opacity: 0; }
             100% { opacity: 1; }
@@ -151,17 +166,36 @@
     <!-- Love Message -->
     <div class="love-message">I LOVE YOU!</div>
 
-    <audio id="background-music" autoplay loop muted>
-        <source src="https://github.com/pip143/Music/raw/refs/heads/main/One%20Direction%20-%20Perfect%20(Official%20Video)%20(%20256kbps%20cbr%20).mp3" type="audio/mpeg">
+    <!-- Play/Pause button for music (user gesture required by browsers) -->
+    <button id="play-btn" class="play-btn" aria-pressed="false">Play Music</button>
+
+    <audio id="background-music" loop preload="auto" crossorigin="anonymous">
+        <!-- It's better to include the mp3 in the same repo and reference it relatively (e.g. "music.mp3").
+             Using a raw.githubusercontent.com URL is an alternative for a public repo. -->
+        <source src="https://raw.githubusercontent.com/pip143/Music/main/One%20Direction%20-%20Perfect%20(Official%20Video)%20(%20256kbps%20cbr%20).mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-    
+
     <script>
+        // Play/pause via user gesture — required by modern browser autoplay policies.
         window.addEventListener('load', () => {
-            const audio = document.getElementById("background-music");
-            audio.muted = false;  // Unmute the audio after autoplay
-            audio.play().catch(error => {
-                console.log("Autoplay may be blocked due to browser policy.");
+            const audio = document.getElementById('background-music');
+            const btn = document.getElementById('play-btn');
+
+            btn.addEventListener('click', async () => {
+                if (audio.paused) {
+                    try {
+                        await audio.play();
+                        btn.textContent = 'Pause Music';
+                        btn.setAttribute('aria-pressed', 'true');
+                    } catch (err) {
+                        console.log('Play failed:', err);
+                    }
+                } else {
+                    audio.pause();
+                    btn.textContent = 'Play Music';
+                    btn.setAttribute('aria-pressed', 'false');
+                }
             });
         });
     </script>
